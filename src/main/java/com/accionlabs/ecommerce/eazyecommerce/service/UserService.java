@@ -1,7 +1,6 @@
 package com.accionlabs.ecommerce.eazyecommerce.service;
 
 import com.accionlabs.ecommerce.eazyecommerce.entities.User;
-
 import java.util.List;
 
 public interface UserService {
