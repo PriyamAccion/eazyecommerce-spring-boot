@@ -4,24 +4,22 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Getter
-@Setter
-@Table(name = "cart")
-public class Cart {
+@Getter @Setter
+@Table(name = "orders")
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id",nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id",nullable = false)
-    private Product product;
+    private Double totalAmount;
 
-
-    private Integer quantity;
+    private LocalDateTime orderDate;
 }
