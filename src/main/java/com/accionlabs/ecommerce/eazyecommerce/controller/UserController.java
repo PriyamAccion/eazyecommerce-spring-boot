@@ -1,6 +1,6 @@
 package com.accionlabs.ecommerce.eazyecommerce.controller;
 
-import com.accionlabs.ecommerce.eazyecommerce.entities.User;
+import com.accionlabs.ecommerce.eazyecommerce.dto.UserDto;
 import com.accionlabs.ecommerce.eazyecommerce.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,22 +16,21 @@ public class UserController {
 
     // Create
     @PostMapping("/users")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        return ResponseEntity.ok(userService.createUser(user));
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+        return ResponseEntity.ok(userService.createUser(userDto));
     }
-
     // Read All Users
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     // Read User by ID
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        User user = userService.getUserById(id);
-        if (user != null) {
-            return ResponseEntity.ok(user);
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        UserDto userDto = userService.getUserById(id);
+        if (userDto != null) {
+            return ResponseEntity.ok(userDto);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -39,8 +38,8 @@ public class UserController {
 
     // Update User
     @PutMapping("/users/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        User updatedUser = userService.updateUser(id, userDetails);
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDetails) {
+        UserDto updatedUser = userService.updateUser(id, userDetails);
         if (updatedUser != null) {
             return ResponseEntity.ok(updatedUser);
         } else {

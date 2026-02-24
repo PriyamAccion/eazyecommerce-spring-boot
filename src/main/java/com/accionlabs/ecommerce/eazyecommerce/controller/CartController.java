@@ -1,5 +1,6 @@
 package com.accionlabs.ecommerce.eazyecommerce.controller;
 
+import com.accionlabs.ecommerce.eazyecommerce.dto.CartDto;
 import com.accionlabs.ecommerce.eazyecommerce.entities.Cart;
 import com.accionlabs.ecommerce.eazyecommerce.service.CartService;
 import org.springframework.http.ResponseEntity;
@@ -18,16 +19,13 @@ public class CartController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Cart> addToCart(@RequestBody Map<String, Long> payload) {
-        Long userId = payload.get("userId");
-        Long productId = payload.get("productId");
-        Integer quantity = payload.get("quantity").intValue();
-        return ResponseEntity.ok(cartService.addToCart(userId, productId, quantity));
+    public ResponseEntity<CartDto> addToCart(@RequestBody CartDto cartDto) {
+        return ResponseEntity.ok(cartService.addToCart(cartDto));
     }
 
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Cart>> getCartItems(@PathVariable Long userId) {
+    public ResponseEntity<List<CartDto>> getCartItems(@PathVariable Long userId) {
         return ResponseEntity.ok(cartService.getCartItems(userId));
     }
 

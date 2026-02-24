@@ -1,9 +1,11 @@
 package com.accionlabs.ecommerce.eazyecommerce.service.impl;
 
+import com.accionlabs.ecommerce.eazyecommerce.dto.OrderDto;
 import com.accionlabs.ecommerce.eazyecommerce.entities.Cart;
 import com.accionlabs.ecommerce.eazyecommerce.entities.Order;
 import com.accionlabs.ecommerce.eazyecommerce.entities.OrderItem;
 import com.accionlabs.ecommerce.eazyecommerce.entities.User;
+import com.accionlabs.ecommerce.eazyecommerce.mapper.OrderMapper;
 import com.accionlabs.ecommerce.eazyecommerce.repository.CartRepository;
 import com.accionlabs.ecommerce.eazyecommerce.repository.OrderItemRepository;
 import com.accionlabs.ecommerce.eazyecommerce.repository.OrderRepository;
@@ -31,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional
-    public Order placeOrder(Long userId) {
+    public OrderDto placeOrder(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         List<Cart> cartItems = cartRepository.findByUserId(userId);
 
@@ -59,6 +61,6 @@ public class OrderServiceImpl implements OrderService {
             orderItemRepository.save(orderItem);
         }
         cartRepository.deleteAll(cartItems);
-        return savedOrder;
+        return OrderMapper.toDto(savedOrder);
     }
 }

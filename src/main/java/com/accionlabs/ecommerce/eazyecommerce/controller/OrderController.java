@@ -1,5 +1,6 @@
 package com.accionlabs.ecommerce.eazyecommerce.controller;
 
+import com.accionlabs.ecommerce.eazyecommerce.dto.OrderDto;
 import com.accionlabs.ecommerce.eazyecommerce.entities.Order;
 import com.accionlabs.ecommerce.eazyecommerce.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,8 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/place/{userId}")
-    public ResponseEntity<Order> placeOrder(@PathVariable Long userId) {
-        Order completedOrder = orderService.placeOrder(userId);
+    public ResponseEntity<OrderDto> placeOrder(@PathVariable Long userId) {
+        OrderDto completedOrder = orderService.placeOrder(userId);
         return ResponseEntity.ok(completedOrder);
     }
 }

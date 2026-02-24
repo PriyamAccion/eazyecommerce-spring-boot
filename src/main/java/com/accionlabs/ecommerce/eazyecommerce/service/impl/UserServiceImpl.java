@@ -1,7 +1,9 @@
 package com.accionlabs.ecommerce.eazyecommerce.service.impl;
 
 
+import com.accionlabs.ecommerce.eazyecommerce.dto.UserDto;
 import com.accionlabs.ecommerce.eazyecommerce.entities.User;
+import com.accionlabs.ecommerce.eazyecommerce.mapper.UserMapper;
 import com.accionlabs.ecommerce.eazyecommerce.repository.UserRepository;
 import com.accionlabs.ecommerce.eazyecommerce.service.UserService;
 import lombok.AllArgsConstructor;
@@ -16,29 +18,32 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public UserDto createUser(UserDto userDto) {
+        User user = UserMapper.toEntity(userDto);
+        User savedUser = userRepository.save(user);
+        return UserMapper.toDto(savedUser);
     }
 
     @Override
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public UserDto getUserById(Long id) {
+        return userRepository.findById(id).map(UserMapper::toDto).orElse(null);
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        return userRepository.findAll().stream().map(UserMapper::toDto).toList();
     }
 
     @Override
-    public User updateUser(Long id, User userDetails) {
+    public UserDto updateUser(Long id, UserDto userDetails) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User existingUser = optionalUser.get();
             existingUser.setName(userDetails.getName());
             existingUser.setEmail(userDetails.getEmail());
             existingUser.setAddress(userDetails.getAddress());
-            return userRepository.save(existingUser);
+            User updatedUser = userRepository.save(existingUser);
+            return UserMapper.toDto(updatedUser);
         }
         return null;
     }
