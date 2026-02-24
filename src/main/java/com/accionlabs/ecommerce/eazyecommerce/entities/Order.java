@@ -22,4 +22,8 @@ public class Order {
     private Double totalAmount;
 
     private LocalDateTime orderDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status;
 }

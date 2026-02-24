@@ -1,10 +1,10 @@
 package com.accionlabs.ecommerce.eazyecommerce.service.impl;
 
-import com.accionlabs.ecommerce.eazyecommerce.dto.OrderDto;
-import com.accionlabs.ecommerce.eazyecommerce.entities.Cart;
-import com.accionlabs.ecommerce.eazyecommerce.entities.Order;
-import com.accionlabs.ecommerce.eazyecommerce.entities.OrderItem;
-import com.accionlabs.ecommerce.eazyecommerce.entities.User;
+import com.accionlabs.ecommerce.eazyecommerce.dto.OrderRequestDto;
+import com.accionlabs.ecommerce.eazyecommerce.dto.OrderResponseDto;
+import com.accionlabs.ecommerce.eazyecommerce.entities.*;
+import com.accionlabs.ecommerce.eazyecommerce.exception.BadRequestException;
+import com.accionlabs.ecommerce.eazyecommerce.exception.ResourceNotFoundException;
 import com.accionlabs.ecommerce.eazyecommerce.mapper.OrderMapper;
 import com.accionlabs.ecommerce.eazyecommerce.repository.CartRepository;
 import com.accionlabs.ecommerce.eazyecommerce.repository.OrderItemRepository;
@@ -33,12 +33,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional
-    public OrderDto placeOrder(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+    public OrderResponseDto placeOrder(OrderRequestDto orderRequestDto) {
+        Long userId = orderRequestDto.getUserId();
+        User user = userRepository.findById(userId).
+                orElseThrow(() -> new ResourceNotFoundException("User not found"));
         List<Cart> cartItems = cartRepository.findByUserId(userId);
 
         if (cartItems.isEmpty()) {
-            throw new RuntimeException("Cart is empty. Cannot place an order.");
+            throw new BadRequestException("Cart is empty. Cannot place an order.");
         }
 
         double total = 0.0;
@@ -50,6 +52,7 @@ public class OrderServiceImpl implements OrderService {
         order.setUser(user);
         order.setTotalAmount(total);
         order.setOrderDate(LocalDateTime.now());
+        order.setStatus(OrderStatus.ORDER_CONFIRMED);
         Order savedOrder = orderRepository.save(order);
 
         for (Cart cartItem : cartItems) {

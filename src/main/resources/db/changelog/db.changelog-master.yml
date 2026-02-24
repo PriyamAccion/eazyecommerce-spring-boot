@@ -138,3 +138,17 @@ databaseChangeLog:
               - column:
                   name: price
                   type: DOUBLE
+
+  - changeSet:
+      id: 006-add-status-to-orders
+      author: Priyam Agarwal
+      changes:
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  defaultValue: ORDER_CONFIRMED
+                  constraints:
+                    nullable: false

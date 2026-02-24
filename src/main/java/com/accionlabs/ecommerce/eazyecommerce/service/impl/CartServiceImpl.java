@@ -1,15 +1,19 @@
 package com.accionlabs.ecommerce.eazyecommerce.service.impl;
 
-import com.accionlabs.ecommerce.eazyecommerce.dto.CartDto;
+import com.accionlabs.ecommerce.eazyecommerce.dto.CartRequestDto;
+import com.accionlabs.ecommerce.eazyecommerce.dto.CartResponseDto;
 import com.accionlabs.ecommerce.eazyecommerce.entities.Cart;
 import com.accionlabs.ecommerce.eazyecommerce.entities.Product;
 import com.accionlabs.ecommerce.eazyecommerce.entities.User;
+import com.accionlabs.ecommerce.eazyecommerce.exception.BadRequestException;
+import com.accionlabs.ecommerce.eazyecommerce.exception.ResourceNotFoundException;
 import com.accionlabs.ecommerce.eazyecommerce.mapper.CartMapper;
 import com.accionlabs.ecommerce.eazyecommerce.repository.CartRepository;
 import com.accionlabs.ecommerce.eazyecommerce.repository.ProductRepository;
 import com.accionlabs.ecommerce.eazyecommerce.repository.UserRepository;
 import com.accionlabs.ecommerce.eazyecommerce.service.CartService;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,30 +31,30 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartDto addToCart(CartDto cartDto)
+    public CartResponseDto addToCart(CartRequestDto cartRequestDtoDto)
     {
-        Integer quantity = cartDto.getQuantity();
-        Long userId = cartDto.getUserId();
-        Long productId = cartDto.getProductId();
+        Integer quantity = cartRequestDtoDto.getQuantity();
+        Long userId = cartRequestDtoDto.getUserId();
+        Long productId = cartRequestDtoDto.getProductId();
         if (quantity == null || quantity <= 0) {
-            throw new RuntimeException("Quantity must be greater than 0");
+            throw new BadRequestException("Quantity must be greater than 0");
         }
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         if (product.getStockQuantity() <= 0) {
-            throw new RuntimeException("Product is currently out of stock");
+            throw new BadRequestException("Product is currently out of stock");
         }
         Cart cart = cartRepository.findByUserIdAndProductId(userId, productId).orElse(null);
         if (cart != null) {
             int newQuantity = cart.getQuantity() + quantity;
             if (newQuantity > product.getStockQuantity()) {
-                throw new RuntimeException("Cannot add more items. Available stock: " + product.getStockQuantity());
+                throw new BadRequestException("Cannot add more items. Available stock: " + product.getStockQuantity());
             }
             cart.setQuantity(newQuantity);
 
         } else {
             if (quantity > product.getStockQuantity()) {
-                throw new RuntimeException("Insufficient stock. Available: " + product.getStockQuantity());
+                throw new BadRequestException("Insufficient stock. Available: " + product.getStockQuantity());
             }
             cart = new Cart();
             cart.setUser(user);
@@ -61,13 +65,13 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<CartDto> getCartItems(Long userId) {
+    public List<CartResponseDto> getCartItems(Long userId) {
         return cartRepository.findByUserId(userId).stream().map(CartMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
     public void removeFromCart(Long userId, Long productId) {
-        Cart cart = cartRepository.findByUserIdAndProductId(userId, productId).orElseThrow(() -> new RuntimeException("Cart item not found"));
+        Cart cart = cartRepository.findByUserIdAndProductId(userId, productId).orElseThrow(() -> new ResourceNotFoundException("Cart item not found"));
         cartRepository.delete(cart);
     }
 

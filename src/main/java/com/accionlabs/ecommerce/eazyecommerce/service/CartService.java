@@ -1,11 +1,13 @@
 package com.accionlabs.ecommerce.eazyecommerce.service;
 
-import com.accionlabs.ecommerce.eazyecommerce.dto.CartDto;
+import com.accionlabs.ecommerce.eazyecommerce.dto.CartRequestDto;
+import com.accionlabs.ecommerce.eazyecommerce.dto.CartResponseDto;
+
 import java.util.List;
 
 public interface CartService {
 
-     CartDto addToCart(CartDto cartDto);
-     List<CartDto> getCartItems(Long userId);
+     CartResponseDto addToCart(CartRequestDto cartDto);
+     List<CartResponseDto> getCartItems(Long userId);
     void removeFromCart(Long userId, Long productId);
 }
